@@ -1,0 +1,9 @@
+[submodule "external/SFML"]
+	path = external/SFML
+	url = https://github.com/SFML/SFML.git
+[submodule "external/event-emitter"]
+	path = external/event-emitter
+	url = git@github.com:mschnee/eventemitter-eventloop.git
+[submodule "external/gsl"]
+	path = external/gsl
+	url = https://github.com/Microsoft/GSL.git
