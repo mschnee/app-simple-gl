@@ -1,10 +1,10 @@
 set (_headers 
-	WindowManager.h
-	SceneManager.h
+	WindowController.h
+	SceneController.h
 )
 set (_sources
-	WindowManager.cpp
-	SceneManager.cpp
+	WindowController.cpp
+	SceneController.cpp
 )
 
 add_library (frontend ${_headers} ${_sources})

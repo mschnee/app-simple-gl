@@ -1,3 +1,4 @@
+#pragma once
 #include <EventEmitter/EventEmitter.h>
 
 namespace Backend {
@@ -10,7 +11,7 @@ class Scene;
 class SceneController : public EventEmitter::Emitter {
 public:
 	void SetApplication(Backend::Application* app);
-	Scene* GetCurrentScene();
+	Scene* GetCurrentScene() const;
 
 private:
 	Backend::Application *m_application{ nullptr };

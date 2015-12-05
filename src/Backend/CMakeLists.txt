@@ -1,10 +1,10 @@
 set (_headers 
 	Application.h
-	Settings.h
+	SettingsController.h
 )
 set (_sources
 	Application.cpp
-	Settings.cpp
+	SettingsController.cpp
 )
 
 add_library (backend ${_headers} ${_sources})

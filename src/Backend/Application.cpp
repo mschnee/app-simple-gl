@@ -1,6 +1,6 @@
 #include "Application.h"
-#include "Frontend/SceneManager.h"
-#include <EventEmitter/EventLoop.h>
+#include "Frontend/SceneController.h"
+#include <EventEmitter/Registry.h>
 #include <cassert>
 
 namespace Backend
@@ -15,7 +15,7 @@ int Application::Exec()
 			m_sceneController->SetApplication(this);
 			ConnectSceneController();
 		}
-		EventEmitter::EventLoop::ProcessEvents();
+		EventEmitter::Registry::ProcessEvents();
 	}
 	return 0;
 }

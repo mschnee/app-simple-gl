@@ -7,3 +7,6 @@
 [submodule "external/gsl"]
 	path = external/gsl
 	url = https://github.com/Microsoft/GSL.git
+[submodule "external/rapidjson"]
+	path = external/rapidjson
+	url = https://github.com/miloyip/rapidjson.git
