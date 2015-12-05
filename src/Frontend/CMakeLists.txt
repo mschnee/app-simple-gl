@@ -1,4 +1,4 @@
-set (_headers 
+set (_headers
 	WindowController.h
 	SceneController.h
 )
@@ -8,16 +8,16 @@ set (_sources
 )
 
 add_library (frontend ${_headers} ${_sources})
-set_property (TARGET frontend PROPERTY FOLDER "Application") 
+set_property (TARGET frontend PROPERTY FOLDER "Application")
 
-target_link_libraries (frontend 
-	debug sfml-window-d 
+target_link_libraries (frontend
+	debug sfml-window-d
 	optimized sfml-window
-	debug sfml-graphics-d 
+	debug sfml-graphics-d
 	optimized sfml-graphics
 	debug sfml-audio-d
 	optimized sfml-audio
-	openal
+	openal32
 	vorbis
 	vorbisfile
 	ogg

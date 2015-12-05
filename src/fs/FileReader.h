@@ -9,20 +9,30 @@
 namespace fs
 {
 
+class FileReader;
 typedef std::function<void(FileReader*)> FileReaderCallback;
+
 class FileReader : public EventEmitter::Emitter
 {
 public:
-	bool IsError();
-	std::unique_ptr<std::string*> GetData();
+	bool IsError() const
+	{
+		return m_isError;
+	}
+
 private:
 	FileReader(const std::string& fileName, FileReaderCallback callback);
 	
 private:
 	FileReaderCallback m_callback;
-	gsl::owner<std::string*> m_data;
-	bool is_error;
+	std::unique_ptr<std::string> m_data;
+	bool m_isError;
 };
 
-void readFile(const std::string& fileName, std::function<void(unique_ptr<std::string>)> callback);
+template<typename T = std::string>
+void readFile(const std::wstring& fileName, std::function<void(std::unique_ptr<T>)> callback);
+
+template<>
+void readFile<std::string>(const std::wstring& fileName, std::function<void(std::unique_ptr<std::string>)> callback);
+
 } // namespace fs

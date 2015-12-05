@@ -1,5 +1,5 @@
 #pragma once
-#include <EventEmitter/EventEmitter.h>
+#include <EventEmitter/Emitter.h>
 
 namespace Backend {
 	class Application;
