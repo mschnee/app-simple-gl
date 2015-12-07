@@ -18,7 +18,7 @@ public:
 	~SettingsController();
 	
 	template<typename T>
-	T& GetValue(const std::string& key, const T& defaultValue);
+	T GetValue(const std::string& key, const T& defaultValue);
 	
 	template<typename T>
 	void SetValue(const std::string& key, const T& value, Scope = User);
@@ -26,6 +26,7 @@ public:
 	void LoadSettings();
 
 protected:
+	rapidjson::Value* GetValue(const std::string& key);
 	void LoadSettingsInternal();
 	void UpdateLivingJson();
 

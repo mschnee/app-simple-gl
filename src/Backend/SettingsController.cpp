@@ -1,6 +1,7 @@
 #include "SettingsController.h"
 #include "Events/Events.h"
 #include "fs/fs.h"
+#include <rapidjson/pointer.h>
 #include <future>
 #include <sstream>
 
@@ -47,9 +48,9 @@ void InitSettingsPaths()
 	// get app settings 
 	{
 		char buffer[MAX_PATH];
-		GetModuleFileName(NULL, buffer, MAX_PATH);
-		std::string::size_type pos = std::string(buffer).find_last_of("\\/");
-		std::string narrow = std::string(buffer).substr(0, pos);
+		GetModuleFileName(nullptr, buffer, MAX_PATH);
+		auto pos = std::string(buffer).find_last_of("\\/");
+		auto narrow = std::string(buffer).substr(0, pos);
 
 		std::wstringstream ss;
 		std::wstring ws;
@@ -72,14 +73,74 @@ SettingsController::~SettingsController()
 {
 }
 
-template <typename T>
-T& SettingsController::GetValue(const std::string& key, const T& defaultValue)
+rapidjson::Value* SettingsController::GetValue(const std::string& key)
 {
+	auto v = rapidjson::Pointer(key.c_str()).Get(*m_appJson);
+
+	if (!v)
+	{
+		v = rapidjson::Pointer(key.c_str()).Get(*m_userJson);
+	}
+
+	if (!v)
+	{
+		v = rapidjson::Pointer(key.c_str()).Get(*m_systemJson);
+	}
+
+	return v;
 }
 
-template <typename T>
-void SettingsController::SetValue(const std::string& key, const T& value, Scope)
+template<>
+int SettingsController::GetValue(const std::string& key, const int& defaultValue)
 {
+	auto v = GetValue(key);
+	if (!v || v->IsNull() || !v->IsNumber())
+	{
+		return defaultValue;
+	}
+	
+	return v->GetInt();
+}
+
+template<>
+double SettingsController::GetValue(const std::string& key, const double& defaultValue)
+{
+	auto v = GetValue(key);
+	if (!v || v->IsNull() || !v->IsNumber())
+	{
+		return defaultValue;
+	}
+
+	return v->GetDouble();
+}
+
+template<>
+std::string SettingsController::GetValue(const std::string& key, const std::string& defaultValue)
+{
+	auto v = GetValue(key);
+	if (!v || v->IsNull() || !v->IsString())
+	{
+		return defaultValue;
+	}
+
+	return v->GetString();
+}
+
+template <>
+void SettingsController::SetValue(const std::string& key, const std::string& value, Scope scope)
+{
+	auto d = m_appJson.get();
+	if (scope == User)
+	{
+		d = m_userJson.get();
+	} else if (scope == System)
+	{
+		d = m_systemJson.get();
+	}
+
+	rapidjson::Pointer(key.c_str()).Set(*d, value.c_str());
+	// notify if necessary
+	// Emit(Events::SettingsUpdated);
 }
 
 /**
