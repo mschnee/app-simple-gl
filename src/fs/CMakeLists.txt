@@ -1,11 +1,13 @@
 set (_headers
     fs.h
 	FileReader.h
+	FileWriter.h
     Response.h
 )
 
 set (_sources
 	FileReader.cpp
+	FileWriter.cpp
     Response.cpp
 )
 

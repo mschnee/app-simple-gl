@@ -24,11 +24,12 @@ public:
 	void SetValue(const std::string& key, const T& value, Scope = User);
 	
 	void LoadSettings();
+	void SaveSettings();
 
 protected:
-	rapidjson::Value* GetValue(const std::string& key);
-	void LoadSettingsInternal();
-	void UpdateLivingJson();
+	rapidjson::Value* GetValue(const std::string& key) const;
+	void LoadSettingsAsyncInternal();
+	void SaveSettingsAsyncInternal();
 
 private:
 	std::unique_ptr<rapidjson::Document> m_systemJson {nullptr};

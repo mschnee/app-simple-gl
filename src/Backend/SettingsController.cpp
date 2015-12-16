@@ -73,7 +73,7 @@ SettingsController::~SettingsController()
 {
 }
 
-rapidjson::Value* SettingsController::GetValue(const std::string& key)
+rapidjson::Value* SettingsController::GetValue(const std::string& key) const
 {
 	auto v = rapidjson::Pointer(key.c_str()).Get(*m_appJson);
 
@@ -133,7 +133,8 @@ void SettingsController::SetValue(const std::string& key, const std::string& val
 	if (scope == User)
 	{
 		d = m_userJson.get();
-	} else if (scope == System)
+	} 
+	else if (scope == System)
 	{
 		d = m_systemJson.get();
 	}
@@ -148,15 +149,23 @@ void SettingsController::SetValue(const std::string& key, const std::string& val
  */
 void SettingsController::LoadSettings()
 {
-	std::async(&SettingsController::LoadSettingsInternal, this);
+	std::async(&SettingsController::SaveSettingsAsyncInternal, this);
 }
 
-void SettingsController::LoadSettingsInternal()
+/**
+ * Asynchronously save settings?
+ */
+void SettingsController::SaveSettings()
+{
+	std::async(&SettingsController::SaveSettingsAsyncInternal, this);
+}
+
+void SettingsController::LoadSettingsAsyncInternal()
 {
 	m_systemSettingsLoaded = m_appSettingsLoaded = m_userSettingsLoaded = false;
 
 	
-	fs::readFile<rapidjson::Document>(s_systemSettingsPath,[this](std::unique_ptr<rapidjson::Document> doc)
+	fs::readFile<rapidjson::Document>(s_systemSettingsPath, [this](std::unique_ptr<rapidjson::Document> doc)
 	{
 		std::lock_guard<std::mutex> lock(m_updateSystemSettingsMutex);
 		if (m_systemJson)
@@ -198,12 +207,37 @@ void SettingsController::LoadSettingsInternal()
 	//} while (!m_systemSettingsLoaded && !m_appSettingsLoaded && !m_userSettingsLoaded);
 	} while (!m_appSettingsLoaded);
 
-	UpdateLivingJson();
 	Emit(Events::SettingsReloaded);
 }
 
-void SettingsController::UpdateLivingJson()
+void SettingsController::SaveSettingsAsyncInternal()
 {
+	if (m_systemJson && !m_systemJson->IsNull())
+	{
+		m_updateSystemSettingsMutex.lock();
+		fs::writeFile<rapidjson::Document>(s_systemSettingsPath, *m_systemJson, [this]()
+		{
+			m_updateSystemSettingsMutex.unlock();
+		});
+	}
+
+	if (m_userJson && !m_userJson->IsNull())
+	{
+		m_updateUserSettingsMutex.lock();
+		fs::writeFile<rapidjson::Document>(s_systemSettingsPath, *m_userJson, [this]()
+		{
+			m_updateUserSettingsMutex.unlock();
+		});
+	}
+
+	if (m_appJson && !m_appJson->IsNull())
+	{
+		m_updateAppSettingsMutex.lock();
+		fs::writeFile<rapidjson::Document>(s_systemSettingsPath, *m_appJson, [this]()
+		{
+			m_updateAppSettingsMutex.unlock();
+		});
+	}
 }
 
 } // namespace Backend

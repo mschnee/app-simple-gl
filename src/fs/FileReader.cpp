@@ -12,7 +12,9 @@ namespace fs
 namespace
 {
 
-void readFileToString(const std::wstring& fileName, std::function<void(std::unique_ptr<std::string>)> callback)
+void readFileToString(
+	const std::wstring& fileName, 
+	std::function<void(std::unique_ptr<std::string>)> callback )
 {
 	std::ifstream t(fileName, std::ifstream::in);
 	std::stringstream buffer;
@@ -34,12 +36,18 @@ void readFileToString(const std::wstring& fileName, std::function<void(std::uniq
 /**
  * Reads a file into a string asyncronously.
  */
-template<> void readFile<std::string>(const std::wstring& fileName, std::function<void(std::unique_ptr<std::string>)> callback)
+template<> 
+void readFile<std::string>(
+	const std::wstring& fileName, 
+	std::function<void(std::unique_ptr<std::string>)> callback)
 {
 	std::async(std::launch::async, readFileToString, fileName, callback);
 };
 
-template<> void readFile<rapidjson::Document>(const std::wstring& fileName, std::function<void(std::unique_ptr<rapidjson::Document>)> callback)
+template<>
+void readFile<rapidjson::Document>(
+	const std::wstring& fileName, 
+	std::function<void(std::unique_ptr<rapidjson::Document>)> callback)
 {
 	readFile<std::string>(fileName, [callback](std::unique_ptr<std::string> result)
 	{
