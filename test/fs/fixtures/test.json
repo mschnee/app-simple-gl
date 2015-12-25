@@ -1,0 +1,16 @@
+{
+	"testKeyBool": true,
+	"testKeyInt": 1,
+	"testKeyFloat": 1.25,
+	"testKeyString": "TestString",
+	"testKeyArray": [
+		"one", 2, false, 4.5, null
+	],
+	"testKeyNull": null,
+	"testKeyObject": {
+		"testObjectKeyBool": true,
+		"testObjectKeyInt": 11,
+		"testObjectKeyFloat": 12.55,
+		"testObjectKeyString": "InnerString"
+	}
+}
