@@ -11,3 +11,5 @@ target_link_libraries (test_sanity
 add_dependencies (test_sanity googletest-external)
 
 add_test(cmake_test_sanity test_sanity)
+
+add_subdirectory (fs)

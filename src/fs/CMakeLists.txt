@@ -2,13 +2,13 @@ set (_headers
     fs.h
 	FileReader.h
 	FileWriter.h
-    Response.h
+    Path.h
 )
 
 set (_sources
 	FileReader.cpp
 	FileWriter.cpp
-    Response.cpp
+    Path.cpp
 )
 
 add_library(fs ${_sources} ${_headers})

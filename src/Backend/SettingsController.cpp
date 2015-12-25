@@ -47,16 +47,7 @@ void InitSettingsPaths()
 	}
 	// get app settings 
 	{
-		char buffer[MAX_PATH];
-		GetModuleFileName(nullptr, buffer, MAX_PATH);
-		auto pos = std::string(buffer).find_last_of("\\/");
-		auto narrow = std::string(buffer).substr(0, pos);
-
-		std::wstringstream ss;
-		std::wstring ws;
-		ws.assign(narrow.begin(), narrow.end());
-		ss << ws << L"\\settings.json";
-		s_appSettingsPath = ss.str();
+		s_appSettingsPath = fs::GetApplicationPath() + L"\\settings.json";
 	}
 #endif
 
