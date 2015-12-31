@@ -4,6 +4,7 @@
 [submodule "external/event-emitter"]
 	path = external/event-emitter
 	url = git@github.com:mschnee/eventemitter-eventloop.git
+	branch = master
 [submodule "external/gsl"]
 	path = external/gsl
 	url = https://github.com/Microsoft/GSL.git
