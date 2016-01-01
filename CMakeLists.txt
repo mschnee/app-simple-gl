@@ -42,8 +42,9 @@ ExternalProject_Add (GSL-external
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/external-build
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/gsl
     INSTALL_DIR ${Sprites_Output_Path}
-    CMAKE_ARGS
-      -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
 )
 
 ExternalProject_Add (rapidjson-external
@@ -62,6 +63,7 @@ ExternalProject_Add (googletest-external
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR> -DGTEST_CREATE_SHARED_LIBRARY:BOOL=TRUE -DBUILD_SHARED_LIBS:BOOL=TRUE
     STEP_TARGETS post_install
 )
+if(WIN32)
 ExternalProject_Add_Step(googletest-external post_install
     DEPENDEES INSTALL
     LOG 1
@@ -70,6 +72,7 @@ ExternalProject_Add_Step(googletest-external post_install
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Sprites_Library_Path}/gtest.dll ${Sprites_Runtime_Path}/gtest.dll
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Sprites_Library_Path}/gtest_main.dll ${Sprites_Runtime_Path}/gtest_main.dll
 )
+endif()
 
 include_directories (
     ${CMAKE_CURRENT_BINARY_DIR}/external/include 

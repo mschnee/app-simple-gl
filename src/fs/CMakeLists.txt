@@ -12,4 +12,6 @@ set (_sources
 )
 
 add_library(fs ${_sources} ${_headers})
+set_property (TARGET fs PROPERTY CXX_STANDARD 11)
+set_property (TARGET fs PROPERTY CXX_STANDARD_REQUIRED TRUE)
 set_property (TARGET fs PROPERTY FOLDER "Application")

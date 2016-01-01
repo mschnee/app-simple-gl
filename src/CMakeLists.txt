@@ -1,4 +1,6 @@
 add_executable (Sprites main.cpp)
+set_property (TARGET Sprites PROPERTY CXX_STANDARD 11)
+set_property (TARGET Sprites PROPERTY CXX_STANDARD_REQUIRED TRUE)
 add_subdirectory (Backend)
 add_subdirectory (Frontend)
 add_subdirectory (fs)
