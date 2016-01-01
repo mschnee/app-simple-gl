@@ -11,6 +11,6 @@ namespace fs
  *  write a specialization that does.
  */
 template<typename T = std::string>
-void writeFile(const std::wstring& fileName, const T& data, std::function<void()> callback);
+void writeFile(const std::string& fileName, const T& data, std::function<void()> callback);
 
 } // namespace fs

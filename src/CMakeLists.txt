@@ -1,5 +1,6 @@
 add_executable (Sprites main.cpp)
-set_property (TARGET Sprites PROPERTY CXX_STANDARD 11)
+add_dependencies (Sprites build-all-externals)
+set_property (TARGET Sprites PROPERTY CXX_STANDARD 14)
 set_property (TARGET Sprites PROPERTY CXX_STANDARD_REQUIRED TRUE)
 add_subdirectory (Backend)
 add_subdirectory (Frontend)
@@ -13,8 +14,10 @@ target_link_libraries (Sprites
 	util
 
 	# externals
-	debug EventEmitterd
+	debug EventEmitter
 	optimized EventEmitter
+	pthread
+	c++
 )
 
 add_dependencies (backend EventEmitter-external SFML-external GSL-external rapidjson-external)

@@ -2,5 +2,5 @@
 
 namespace fs
 {
-	std::wstring GetApplicationPath();
+	std::string GetApplicationPath();
 }

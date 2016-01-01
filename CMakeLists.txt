@@ -3,24 +3,28 @@ project (Sprites)
 cmake_minimum_required (VERSION 3.4.0)
 
 set_property (GLOBAL PROPERTY USE_FOLDERS ON)
+
+if (NOT WIN32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -v -std=c++11")
+endif()
 include (ExternalProject)
 
-set(Sprites_Output_Path ${CMAKE_CURRENT_BINARY_DIR}/out)
-set(Sprites_Runtime_Path ${Sprites_Output_Path}/bin)
-set(Sprites_Library_Path ${Sprites_Output_Path}/lib)
-set(Sprites_Archive_Path ${Sprites_Output_Path}/lib)
+set (Sprites_Output_Path ${CMAKE_CURRENT_BINARY_DIR}/out)
+set (Sprites_Runtime_Path ${Sprites_Output_Path}/bin)
+set (Sprites_Library_Path ${Sprites_Output_Path}/lib)
+set (Sprites_Archive_Path ${Sprites_Output_Path}/lib)
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${Sprites_Archive_Path})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${Sprites_Library_Path})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${Sprites_Runtime_Path})
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${Sprites_Archive_Path})
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${Sprites_Library_Path})
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${Sprites_Runtime_Path})
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${Sprites_Archive_Path})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${Sprites_Library_Path})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${Sprites_Runtime_Path})
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${Sprites_Archive_Path})
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${Sprites_Library_Path})
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${Sprites_Runtime_Path})
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${Sprites_Archive_Path})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${Sprites_Library_Path})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${Sprites_Runtime_Path})
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${Sprites_Archive_Path})
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${Sprites_Library_Path})
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${Sprites_Runtime_Path})
 
 ExternalProject_Add (EventEmitter-external
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/external-build
@@ -28,6 +32,9 @@ ExternalProject_Add (EventEmitter-external
     INSTALL_DIR ${Sprites_Output_Path}
     CMAKE_ARGS
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
+      -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
+      -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
 )
 
 ExternalProject_Add (SFML-external
@@ -36,6 +43,9 @@ ExternalProject_Add (SFML-external
     INSTALL_DIR ${Sprites_Output_Path}
     CMAKE_ARGS
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
+      -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
+      -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
 )
 
 ExternalProject_Add (GSL-external
@@ -53,6 +63,9 @@ ExternalProject_Add (rapidjson-external
     INSTALL_DIR ${Sprites_Output_Path}
     CMAKE_ARGS
       -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
+      -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
+      -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
 )
 
 ExternalProject_Add (googletest-external
@@ -60,12 +73,18 @@ ExternalProject_Add (googletest-external
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/googletest
     INSTALL_DIR ${Sprites_Output_Path}
     CMAKE_ARGS
-      -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR> -DGTEST_CREATE_SHARED_LIBRARY:BOOL=TRUE -DBUILD_SHARED_LIBS:BOOL=TRUE
+      -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      -DGTEST_CREATE_SHARED_LIBRARY:BOOL=TRUE
+      -DBUILD_SHARED_LIBS:BOOL=TRUE
+      -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
+      -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
+      -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
     STEP_TARGETS post_install
 )
-if(WIN32)
+
+if (WIN32)
 ExternalProject_Add_Step(googletest-external post_install
-    DEPENDEES INSTALL
+    DEPENDEES install
     LOG 1
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Sprites_Library_Path}/gmock.dll ${Sprites_Runtime_Path}/gmock.dll
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Sprites_Library_Path}/gmock_main.dll ${Sprites_Runtime_Path}/gmock_main.dll
@@ -75,13 +94,21 @@ ExternalProject_Add_Step(googletest-external post_install
 endif()
 
 include_directories (
-    ${CMAKE_CURRENT_BINARY_DIR}/external/include 
+    ${CMAKE_BINARY_DIR}/out/include
     ${CMAKE_SOURCE_DIR}/src/
     ${CMAKE_SOURCE_DIR}/external/gsl/include
 )
-link_directories (${CMAKE_CURRENT_BINARY_DIR}/external/bin ${CMAKE_CURRENT_BINARY_DIR}/external/lib)
+
+get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+foreach(dir ${dirs})
+    message(STATUS "dir='${dir}'")
+endforeach()
+
+link_directories (${CMAKE_CURRENT_BINARY_DIR}/out/bin ${CMAKE_CURRENT_BINARY_DIR}/out/lib)
 
 add_subdirectory (src)
 add_subdirectory (test)
 
-add_dependencies (Sprites EventEmitter-external SFML-external GSL-external rapidjson-external)
+add_custom_target(build-all-externals
+    DEPENDS googletest-external rapidjson-external GSL-external SFML-external EventEmitter-external
+)

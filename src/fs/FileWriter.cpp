@@ -16,7 +16,7 @@ struct DocStream
 	void Flush() {}
 };
 
-void writeFileFromString(const std::wstring& fileName, const std::string& data, std::function<void()> callback)
+void writeFileFromString(const std::string& fileName, const std::string& data, std::function<void()> callback)
 {
 	std::ofstream t(fileName, std::ifstream::out | std::ifstream::trunc);
 	
@@ -30,7 +30,7 @@ void writeFileFromString(const std::wstring& fileName, const std::string& data, 
 
 template <>
 void writeFile<std::string>(
-	const std::wstring& fileName,
+	const std::string& fileName,
 	const std::string& data,
 	std::function<void()> callback)
 {
@@ -39,7 +39,7 @@ void writeFile<std::string>(
 
 template <>
 void writeFile<rapidjson::Document>(
-	const std::wstring& fileName,
+	const std::string& fileName,
 	const rapidjson::Document& doc,
 	std::function<void()> callback)
 {

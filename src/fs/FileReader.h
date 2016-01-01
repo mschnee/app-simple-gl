@@ -12,6 +12,6 @@ namespace fs
 *  Calls callback with a std::move()'d std::unique_ptr to the loaded data.
 */
 template<typename T = std::string>
-void readFile(const std::wstring& fileName, std::function<void(std::unique_ptr<T>)> callback);
+void readFile(const std::string& fileName, std::function<void(std::unique_ptr<T>)> callback);
 
 } // namespace fs

@@ -15,9 +15,9 @@ namespace Backend
 
 namespace
 {
-std::wstring s_systemSettingsPath;
-std::wstring s_appSettingsPath;
-std::wstring s_userSettingsPath;
+std::string s_systemSettingsPath;
+std::string s_appSettingsPath;
+std::string s_userSettingsPath;
 
 void InitSettingsPaths()
 {
@@ -140,7 +140,7 @@ void SettingsController::SetValue(const std::string& key, const std::string& val
  */
 void SettingsController::LoadSettings()
 {
-	std::async(&SettingsController::SaveSettingsAsyncInternal, this);
+	std::async(std::launch::async, &SettingsController::SaveSettingsAsyncInternal, this);
 }
 
 /**
@@ -148,7 +148,7 @@ void SettingsController::LoadSettings()
  */
 void SettingsController::SaveSettings()
 {
-	std::async(&SettingsController::SaveSettingsAsyncInternal, this);
+	std::async(std::launch::async, &SettingsController::SaveSettingsAsyncInternal, this);
 }
 
 void SettingsController::LoadSettingsAsyncInternal()
