@@ -19,7 +19,7 @@ void readFileToString(
 	std::ifstream t(fileName, std::ifstream::in);
 	std::stringstream buffer;
 	buffer << t.rdbuf();
-	
+
 	if (buffer.str().length() == 0)
 	{
 		callback(std::unique_ptr<std::string>(new std::string("")));
@@ -36,7 +36,7 @@ void readFileToString(
 /**
  * Reads a file into a string asyncronously.
  */
-template<> 
+template<>
 void readFile<std::string>(
 	const std::string& fileName,
 	std::function<void(std::unique_ptr<std::string>)> callback)

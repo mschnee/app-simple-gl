@@ -91,20 +91,26 @@ ExternalProject_Add_Step(googletest-external post_install
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Sprites_Library_Path}/gtest.dll ${Sprites_Runtime_Path}/gtest.dll
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Sprites_Library_Path}/gtest_main.dll ${Sprites_Runtime_Path}/gtest_main.dll
 )
+set_property (TARGET googletest-external-post_install PROPERTY FOLDER "External")
 endif()
 
+add_custom_target(all-external-projects
+    DEPENDS googletest-external rapidjson-external GSL-external SFML-external EventEmitter-external
+)
+
+set_property (TARGET all-external-projects PROPERTY FOLDER "External")
+set_property (TARGET googletest-external PROPERTY FOLDER "External")
+set_property (TARGET rapidjson-external PROPERTY FOLDER "External")
+set_property (TARGET GSL-external PROPERTY FOLDER "External")
+set_property (TARGET SFML-external PROPERTY FOLDER "External")
+set_property (TARGET EventEmitter-external PROPERTY FOLDER "External")
+
 include_directories (
-    ${CMAKE_BINARY_DIR}/out/include
+    ${Sprites_Output_Path}/include
     ${CMAKE_SOURCE_DIR}/src/
     ${CMAKE_SOURCE_DIR}/external/gsl/include
 )
-
-get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
-foreach(dir ${dirs})
-    message(STATUS "dir='${dir}'")
-endforeach()
-
-link_directories (${CMAKE_CURRENT_BINARY_DIR}/out/bin ${CMAKE_CURRENT_BINARY_DIR}/out/lib)
+link_directories (${Sprites_Runtime_Path} ${Sprites_Library_Path})
 
 add_subdirectory (src)
 add_subdirectory (test)

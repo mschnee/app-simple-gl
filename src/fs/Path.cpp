@@ -15,7 +15,7 @@ namespace fs
 namespace
 {
 #if defined(WIN32)
-	std::unique_ptr<IPath> s_path = make_unique<Path_Win>;
+	std::unique_ptr<IPath> s_path = make_unique<Path_Win>();
 #elseif defined(MACOS)
 #else
 	std::unique_ptr<os::IPath> s_path(new os::Path_Linux);
