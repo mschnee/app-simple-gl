@@ -47,6 +47,10 @@ private:
 	bool m_systemSettingsLoaded{ false };
 	bool m_appSettingsLoaded{ false };
 	bool m_userSettingsLoaded{ false };
+
+	std::string m_appSettingsPath;
+	std::string m_systemSettingsPath;
+	std::string m_userSettingsPath;
 };
 
 } // namespace Backent

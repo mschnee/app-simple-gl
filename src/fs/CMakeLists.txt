@@ -13,11 +13,11 @@ set (_sources
 )
 
 if (WIN32)
-	list(APPEND ${_headers} os/Path_Win.h)
+	list (APPEND ${_headers} os/Path_Win.h)
 elseif(MACOS)
-	list(APPEND ${_headers} os/Path_Mac.h)
+	list (APPEND ${_headers} os/Path_Mac.h)
 else()
-	list(APPEND ${_headers} os/Path_Linux.h)
+	list (APPEND ${_headers} os/Path_Linux.h)
 endif()
 
 add_library(fs ${_sources} ${_headers})

@@ -4,6 +4,8 @@
 #include <rapidjson/pointer.h>
 #include <future>
 #include <sstream>
+#include <locale>
+#include <codecvt>
 
 #if defined(WIN32)
 #include <Shlobj.h>
@@ -13,51 +15,12 @@
 namespace Backend
 {
 
-namespace
-{
-std::string s_systemSettingsPath;
-std::string s_appSettingsPath;
-std::string s_userSettingsPath;
-
-void InitSettingsPaths()
-{
-#if defined(WIN32)
-	PWSTR location;
-
-	// get system settings
-	{
-		CoInitialize(nullptr);
-		SHGetKnownFolderPath(FOLDERID_ProgramData, 0, nullptr, &location);
-
-		std::wstringstream ss;
-		ss << location << L"/TwoPiTau.com/settings.json";
-		s_systemSettingsPath = ss.str();
-		CoTaskMemFree(static_cast<void*>(location));
-	}
-
-	// get user settings
-	{
-		CoInitialize(nullptr);
-		SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, nullptr, &location);
-
-		std::wstringstream ss;
-		ss << location << L"/TwoPiTau.com/settings.json";
-		s_userSettingsPath = ss.str();
-		CoTaskMemFree(static_cast<void*>(location));
-	}
-	// get app settings 
-	{
-		s_appSettingsPath = fs::GetApplicationPath() + L"\\settings.json";
-	}
-#endif
-
-}
-
-} // anonymous namespace
-
 SettingsController::SettingsController()
+	: m_appSettingsPath		(fs::GetApplicationPath()	+ "\\settings.json")
+	, m_systemSettingsPath	(fs::GetSharedPath()		+ "\\settings.json")
+	, m_userSettingsPath	(fs::GetUserPath()			+ "\\settings.json")
 {
-	InitSettingsPaths();
+	
 }
 
 SettingsController::~SettingsController()
@@ -156,7 +119,7 @@ void SettingsController::LoadSettingsAsyncInternal()
 	m_systemSettingsLoaded = m_appSettingsLoaded = m_userSettingsLoaded = false;
 
 	
-	fs::readFile<rapidjson::Document>(s_systemSettingsPath, [this](std::unique_ptr<rapidjson::Document> doc)
+	fs::readFile<rapidjson::Document>(m_systemSettingsPath, [this](std::unique_ptr<rapidjson::Document> doc)
 	{
 		std::lock_guard<std::mutex> lock(m_updateSystemSettingsMutex);
 		if (m_systemJson)
@@ -168,7 +131,7 @@ void SettingsController::LoadSettingsAsyncInternal()
 	});
 
 	// load user settings
-	fs::readFile<rapidjson::Document>(s_userSettingsPath, [this](std::unique_ptr<rapidjson::Document> doc)
+	fs::readFile<rapidjson::Document>(m_userSettingsPath, [this](std::unique_ptr<rapidjson::Document> doc)
 	{
 		std::lock_guard<std::mutex> lock(m_updateSystemSettingsMutex);
 		if (m_userJson)
@@ -180,7 +143,7 @@ void SettingsController::LoadSettingsAsyncInternal()
 	});
 	
 	// load app settings
-	fs::readFile<rapidjson::Document>(s_appSettingsPath, [this](std::unique_ptr<rapidjson::Document> doc)
+	fs::readFile<rapidjson::Document>(m_appSettingsPath, [this](std::unique_ptr<rapidjson::Document> doc)
 	{
 		std::lock_guard<std::mutex> lock(m_updateSystemSettingsMutex);
 		if (m_appJson)
@@ -206,7 +169,7 @@ void SettingsController::SaveSettingsAsyncInternal()
 	if (m_systemJson && !m_systemJson->IsNull())
 	{
 		m_updateSystemSettingsMutex.lock();
-		fs::writeFile<rapidjson::Document>(s_systemSettingsPath, *m_systemJson, [this]()
+		fs::writeFile<rapidjson::Document>(m_systemSettingsPath, *m_systemJson, [this]()
 		{
 			m_updateSystemSettingsMutex.unlock();
 		});
@@ -215,7 +178,7 @@ void SettingsController::SaveSettingsAsyncInternal()
 	if (m_userJson && !m_userJson->IsNull())
 	{
 		m_updateUserSettingsMutex.lock();
-		fs::writeFile<rapidjson::Document>(s_systemSettingsPath, *m_userJson, [this]()
+		fs::writeFile<rapidjson::Document>(m_systemSettingsPath, *m_userJson, [this]()
 		{
 			m_updateUserSettingsMutex.unlock();
 		});
@@ -224,7 +187,7 @@ void SettingsController::SaveSettingsAsyncInternal()
 	if (m_appJson && !m_appJson->IsNull())
 	{
 		m_updateAppSettingsMutex.lock();
-		fs::writeFile<rapidjson::Document>(s_systemSettingsPath, *m_appJson, [this]()
+		fs::writeFile<rapidjson::Document>(m_systemSettingsPath, *m_appJson, [this]()
 		{
 			m_updateAppSettingsMutex.unlock();
 		});

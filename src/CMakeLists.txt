@@ -17,7 +17,6 @@ target_link_libraries (Sprites
 
 	# externals
 	EventEmitter
-    rapidjson
 )
 
 add_dependencies (backend all-external-projects)
